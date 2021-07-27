@@ -1,13 +1,10 @@
 import pickle
-import sys
 import os.path
 import urllib
 from bs4 import BeautifulSoup
 from pprint import pprint
 
-sys.path.append(".")
-
-from shopitem import Items 
+from shopitem import Items
 from logger import log
 from inspect import currentframe, getframeinfo
 
@@ -64,7 +61,7 @@ class Database:
         bar = fill * filledLength + '-' * (length - filledLength)
         print(f'\r{prefix} |{bar}| {percent}% {suffix}', end = printEnd)
         # Print New Line on Complete
-        if iteration == total: 
+        if iteration == total:
             print()
 
 
@@ -76,7 +73,7 @@ class Database:
             page        - Required  : current page (Int)
             item        - Required  : current item (Int)
             num_pages   - Required  : # of pages (Int)
-            num_items   - Required  : # of items on page (Int)   
+            num_items   - Required  : # of items on page (Int)
         """
         # Calculate Completion Percent
         base_percent = page/num_pages*100
@@ -114,7 +111,7 @@ class Database:
 
     def load_event_boxes(self):
         url = 'https://gamepress.gg/pokemongo/legacy-special-box-list?page='
-        
+
         # known info
         bad_titles = {'April 200 Box 2': 2020 }
         known_box_types = {
@@ -133,8 +130,8 @@ class Database:
         year = 'current'
         count = 0
         # print("Retrieving Database", end=' ')
-        # sys.stdout.flush()  
-        while (page_num < num_pages): # TODO: remove hardcoding 
+        # sys.stdout.flush()
+        while (page_num < num_pages): # TODO: remove hardcoding
             page_url = url + str(page_num)
             soup = self.get_soup(page_url)
             # TODO: check over time to see if structure of page changes (need to manually updated? or is there a better way?)
@@ -202,7 +199,7 @@ class Database:
                         # print_error(flag, year, count)
                         flags.append(flag)
 
-                try: 
+                try:
                     rows = table.find('tbody').find_all('tr')
                 except:
                     # for some reason tbody is removed in pages 4 and up
@@ -249,7 +246,7 @@ class Database:
                                 # print(int(items[box_col].text))
                                 # events[year][count][name.text][item] = int(items[box_col].text)
                                 self.items.add(item[:], 0, int(items[box_col].text), count, flag)
-                                
+
                             except Exception as e:
                                 self.items.add(item[:], 0, 0, count, flag)
                                 # print(items[box_col].text)
@@ -285,7 +282,7 @@ class Database:
                 - it's printing the:
                     - date (it's not actually a date, just the number of the box which increases the earlier it is)
                     - count (the number of that item type in the bundle)
-            
+
             the code isn't right and it keeps printing the same values
             no matter what item name and list i request, all the bundles print 9 and 16
 
@@ -295,7 +292,7 @@ class Database:
                 - 9 is the earliest box date
 
             in the 'add_bundle' method in Item, when i print the name value for the left bundle it's comparing to,
-                it keeps printing the same name for all the items, so it's messed up already 
+                it keeps printing the same name for all the items, so it's messed up already
                 (and I'm assuming the sorting isn't working because the right bundle option is never reached)
                 - the 'add_bundle' method sorts the created bundle into the lists
                 - the 'add' method in 'Items' creates the bundle and calls 'add_bundle'
@@ -304,7 +301,7 @@ class Database:
             for nitem in self.items.items['# of Pokeballs'].lists['count']:
                 print(nitem.get('date'), nitem.get('count'))
             # pprint(self.items.items['# of Incense'].lists)
-    
+
     def load_obj(self, name):
         with open(self.root + name + '.pkl', 'rb') as f:
             return pickle.load(f)
